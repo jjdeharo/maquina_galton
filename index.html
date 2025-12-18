@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Máquina de Galton Configurable</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      font-family: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, "Roboto", sans-serif;
+      background-color: #101418;
+      color: #f5f7fb;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: radial-gradient(circle at top, #1c2430 0%, #0c0f14 70%);
+    }
+
+    header {
+      padding: 1.5rem;
+      text-align: center;
+      background: rgba(4, 6, 9, 0.75);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    }
+
+    main {
+      flex: 1;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1rem;
+      padding: 1.5rem;
+    }
+
+    h1 {
+      margin: 0;
+      font-weight: 600;
+    }
+
+    .panel {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 18px;
+      padding: 1rem 1.25rem 1.5rem;
+      box-shadow: 0 16px 32px rgba(0, 0, 0, 0.35);
+      backdrop-filter: blur(12px);
+    }
+
+    .panel h2 {
+      margin-top: 0;
+      font-size: 1.15rem;
+      font-weight: 500;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    label {
+      font-size: 0.9rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    input[type="number"], input[type="range"] {
+      flex: 1;
+    }
+
+    input[type="range"] {
+      accent-color: #58d6ff;
+    }
+
+    input[type="number"], select {
+      padding: 0.35rem 0.5rem;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: rgba(0, 0, 0, 0.25);
+      color: inherit;
+      width: 5rem;
+      text-align: center;
+    }
+
+    button {
+      padding: 0.65rem 1rem;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      color: #0c1117;
+      background: linear-gradient(120deg, #59e4ff, #90f4a5);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 20px rgba(89, 228, 255, 0.35);
+    }
+
+    canvas {
+      width: 100%;
+      height: auto;
+      border-radius: 14px;
+      background: radial-gradient(circle at top, rgba(17, 26, 36, 0.85), rgba(9, 12, 18, 0.95));
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-top: 1rem;
+      font-size: 0.9rem;
+    }
+
+    .stats div {
+      flex: 1;
+      min-width: 140px;
+      padding: 0.75rem;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+
+    .controls button {
+      flex: 1;
+      min-width: 120px;
+    }
+
+    .range-value {
+      font-variant-numeric: tabular-nums;
+      min-width: 2ch;
+      display: inline-block;
+      text-align: end;
+    }
+
+    @media (max-width: 900px) {
+      main {
+        grid-template-columns: 1fr;
+      }
+
+      canvas {
+        min-height: 320px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Máquina de Galton interactiva</h1>
+    <p>Explora la distribución binomial ajustando el número de filas, la velocidad de caída, la gravedad y otros parámetros.</p>
+  </header>
+
+  <main>
+    <section class="panel">
+      <h2>Configuración</h2>
+      <form id="config-form">
+        <label>
+          Filas de clavos
+          <input type="number" id="rows" min="4" max="16" value="10" required>
+        </label>
+        <label>
+          Bolas totales
+          <input type="number" id="balls" min="20" max="1000" step="10" value="200" required>
+        </label>
+        <label>
+          Intervalo de disparo (ms)
+          <input type="number" id="interval" min="50" max="1000" step="25" value="120">
+        </label>
+        <label>
+          Radio de bola (px)
+          <input type="number" id="ball-radius" min="4" max="10" value="6">
+        </label>
+        <label>
+          Gravedad (<span class="range-value" id="gravity-value">650</span>)
+          <input type="range" id="gravity" min="200" max="900" value="650">
+        </label>
+        <label>
+          Rebote elástico (<span class="range-value" id="bounce-value">0.45</span>)
+          <input type="range" id="bounce" min="0.1" max="0.9" step="0.05" value="0.45">
+        </label>
+        <label>
+          Ruido lateral (<span class="range-value" id="noise-value">0.15</span>)
+          <input type="range" id="noise" min="0" max="0.8" step="0.05" value="0.15">
+        </label>
+        <div class="controls">
+          <button type="button" id="apply">Aplicar cambios</button>
+          <button type="button" id="start">Iniciar</button>
+          <button type="button" id="pause">Pausa</button>
+          <button type="button" id="reset">Reiniciar</button>
+        </div>
+      </form>
+      <div class="stats">
+        <div>
+          <strong>Bolas liberadas</strong>
+          <div id="released">0</div>
+        </div>
+        <div>
+          <strong>Bolas finalizadas</strong>
+          <div id="settled">0</div>
+        </div>
+        <div>
+          <strong>Desviación típica</strong>
+          <div id="std-dev">0</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Tablero</h2>
+      <canvas id="board" width="640" height="720"></canvas>
+    </section>
+
+    <section class="panel">
+      <h2>Histograma de aterrizajes</h2>
+      <canvas id="histogram" width="640" height="320"></canvas>
+    </section>
+  </main>
+
+  <script>
+    const boardCanvas = document.getElementById('board');
+    const boardCtx = boardCanvas.getContext('2d');
+    const histogramCanvas = document.getElementById('histogram');
+    const histCtx = histogramCanvas.getContext('2d');
+
+    const form = document.getElementById('config-form');
+    const gravityRange = document.getElementById('gravity');
+    const gravityValue = document.getElementById('gravity-value');
+    const bounceRange = document.getElementById('bounce');
+    const bounceValue = document.getElementById('bounce-value');
+    const noiseRange = document.getElementById('noise');
+    const noiseValue = document.getElementById('noise-value');
+
+    const stats = {
+      released: document.getElementById('released'),
+      settled: document.getElementById('settled'),
+      stdDev: document.getElementById('std-dev')
+    };
+
+    const state = {
+      running: false,
+      balls: [],
+      pegs: [],
+      bins: [],
+      releaseTimer: null,
+      dropped: 0,
+      settled: 0,
+      lastTime: 0,
+      geometry: null,
+      rowHeights: [],
+      binFlash: []
+    };
+
+    const config = {
+      rows: parseInt(document.getElementById('rows').value, 10),
+      totalBalls: parseInt(document.getElementById('balls').value, 10),
+      interval: parseInt(document.getElementById('interval').value, 10),
+      ballRadius: parseInt(document.getElementById('ball-radius').value, 10),
+      gravity: parseFloat(gravityRange.value),
+      restitution: parseFloat(bounceRange.value),
+      lateralNoise: parseFloat(noiseRange.value)
+    };
+
+    function updateRangeLabels() {
+      gravityValue.textContent = config.gravity.toFixed(0);
+      bounceValue.textContent = config.restitution.toFixed(2);
+      noiseValue.textContent = config.lateralNoise.toFixed(2);
+    }
+
+    function applyFormValues() {
+      config.rows = clamp(parseInt(document.getElementById('rows').value, 10), 4, 16);
+      config.totalBalls = clamp(parseInt(document.getElementById('balls').value, 10), 20, 1000);
+      config.interval = clamp(parseInt(document.getElementById('interval').value, 10), 50, 1000);
+      config.ballRadius = clamp(parseInt(document.getElementById('ball-radius').value, 10), 4, 10);
+      config.gravity = clamp(parseFloat(gravityRange.value), 200, 900);
+      config.restitution = clamp(parseFloat(bounceRange.value), 0.1, 0.9);
+      config.lateralNoise = clamp(parseFloat(noiseRange.value), 0, 0.8);
+      updateRangeLabels();
+      rebuildBoard();
+    }
+
+    function clamp(value, min, max) {
+      return Math.min(max, Math.max(min, value));
+    }
+
+    function rebuildBoard() {
+      state.pegs = [];
+      state.bins = new Array(config.rows + 1).fill(0);
+      state.binFlash = new Array(config.rows + 1).fill(0);
+      state.balls = [];
+      state.dropped = 0;
+      state.settled = 0;
+      updateStats();
+
+      const usableHeight = boardCanvas.height - 140;
+      const startY = 80;
+      const rowSpacing = usableHeight / config.rows;
+      const colSpacing = boardCanvas.width / (config.rows + 1);
+      const pegRadius = config.ballRadius * 0.55;
+      state.geometry = {
+        centerX: boardCanvas.width / 2,
+        horizontalStep: colSpacing / 2,
+        bottomY: boardCanvas.height - 90,
+        startY,
+        rowSpacing
+      };
+      state.rowHeights = [];
+
+      for (let row = 0; row < config.rows; row++) {
+        const y = startY + row * rowSpacing;
+        state.rowHeights.push(y);
+        const columns = row + 1;
+        const offset = (boardCanvas.width - (columns - 1) * colSpacing) / 2;
+        for (let col = 0; col < columns; col++) {
+          const x = offset + col * colSpacing;
+          state.pegs.push({ x, y, radius: pegRadius });
+        }
+      }
+    }
+
+    function spawnBall() {
+      if (state.dropped >= config.totalBalls) {
+        clearInterval(state.releaseTimer);
+        state.releaseTimer = null;
+        return;
+      }
+      const centerX = state.geometry.centerX;
+      const jitter = (Math.random() - 0.5) * state.geometry.horizontalStep * 0.4;
+      state.balls.push({
+        x: centerX + jitter,
+        targetX: centerX + jitter,
+        y: 30,
+        vy: 0,
+        radius: config.ballRadius,
+        rowIndex: 0,
+        rights: 0,
+        color: `hsl(${Math.random() * 40 + 180}, 70%, 60%)`
+      });
+      state.dropped += 1;
+      updateStats();
+    }
+
+    function startRelease() {
+      if (state.releaseTimer) {
+        clearInterval(state.releaseTimer);
+      }
+      state.releaseTimer = setInterval(spawnBall, config.interval);
+    }
+
+    function updateStats() {
+      stats.released.textContent = state.dropped;
+      stats.settled.textContent = state.settled;
+      stats.stdDev.textContent = calculateStdDev().toFixed(2);
+    }
+
+    function calculateStdDev() {
+      const total = state.bins.reduce((acc, v) => acc + v, 0);
+      if (!total) return 0;
+      const mean = state.bins.reduce((acc, v, i) => acc + v * i, 0) / total;
+      const variance = state.bins.reduce((acc, v, i) => acc + v * Math.pow(i - mean, 2), 0) / total;
+      return Math.sqrt(variance);
+    }
+
+    function normalPdf(x, mean, sigma) {
+      const z = (x - mean) / sigma;
+      return Math.exp(-0.5 * z * z) / (sigma * Math.sqrt(2 * Math.PI));
+    }
+
+    function update(timestamp) {
+      if (!state.running) {
+        requestAnimationFrame(update);
+        return;
+      }
+      if (!state.lastTime) state.lastTime = timestamp;
+      const dt = Math.min((timestamp - state.lastTime) / 1000, 0.033);
+      state.lastTime = timestamp;
+
+      simulateBalls(dt);
+      updateBinFlash(dt);
+      drawBoard();
+      drawHistogram();
+
+      requestAnimationFrame(update);
+    }
+
+    function simulateBalls(dt) {
+      if (!state.geometry) return;
+      const bottomY = state.geometry.bottomY;
+      const chaseFactor = Math.min(12 * dt, 1);
+
+      for (let i = state.balls.length - 1; i >= 0; i--) {
+        const ball = state.balls[i];
+        ball.vy += config.gravity * dt;
+        ball.y += ball.vy * dt;
+        ball.x += (ball.targetX - ball.x) * chaseFactor;
+
+        while (ball.rowIndex < config.rows && ball.y >= state.rowHeights[ball.rowIndex]) {
+          deflectBall(ball);
+        }
+
+        if (ball.rowIndex >= config.rows && ball.y >= bottomY - ball.radius) {
+          settleBall(i);
+        }
+      }
+    }
+
+    function deflectBall(ball) {
+      const probability = clamp(0.5 + (Math.random() - 0.5) * config.lateralNoise, 0.05, 0.95);
+      const goRight = Math.random() < probability;
+      if (goRight) {
+        ball.rights += 1;
+      }
+      ball.rowIndex += 1;
+      ball.targetX = computeTargetX(ball);
+      const damping = 0.55 + config.restitution * 0.35;
+      ball.vy *= damping;
+    }
+
+    function computeTargetX(ball) {
+      const geometry = state.geometry;
+      const displacement = (ball.rights * 2 - ball.rowIndex) * geometry.horizontalStep;
+      const rawX = geometry.centerX + displacement;
+      return clamp(rawX, ball.radius, boardCanvas.width - ball.radius);
+    }
+
+    function settleBall(index) {
+      const ball = state.balls[index];
+      const binIndex = clamp(ball.rights, 0, state.bins.length - 1);
+      state.bins[binIndex] += 1;
+      state.binFlash[binIndex] = 1;
+      state.balls.splice(index, 1);
+      state.settled += 1;
+      updateStats();
+    }
+
+    function updateBinFlash(dt) {
+      if (!state.binFlash.length) return;
+      const decay = dt * 4.5;
+      for (let i = 0; i < state.binFlash.length; i++) {
+        state.binFlash[i] = Math.max(0, state.binFlash[i] - decay);
+      }
+    }
+
+    function drawBoard() {
+      boardCtx.clearRect(0, 0, boardCanvas.width, boardCanvas.height);
+      boardCtx.fillStyle = '#0c131b';
+      boardCtx.fillRect(0, 0, boardCanvas.width, boardCanvas.height);
+
+      const binHeight = 80;
+      const binWidth = boardCanvas.width / state.bins.length;
+      boardCtx.shadowColor = 'transparent';
+      boardCtx.shadowBlur = 0;
+      for (let i = 0; i < state.bins.length; i++) {
+        const x = binWidth * i;
+        boardCtx.fillStyle = 'rgba(255, 255, 255, 0.08)';
+        boardCtx.fillRect(x, boardCanvas.height - binHeight, binWidth - 2, binHeight);
+        const flash = state.binFlash[i] || 0;
+        if (flash > 0) {
+          boardCtx.fillStyle = `rgba(255, 214, 120, ${0.35 * flash})`;
+          boardCtx.shadowColor = `rgba(255, 214, 120, ${0.5 * flash})`;
+          boardCtx.shadowBlur = 20 * flash;
+          boardCtx.fillRect(
+            x,
+            boardCanvas.height - binHeight - flash * 8,
+            binWidth - 2,
+            binHeight + flash * 6
+          );
+          boardCtx.shadowBlur = 0;
+        }
+      }
+
+      boardCtx.strokeStyle = 'rgba(255,255,255,0.1)';
+      boardCtx.beginPath();
+      boardCtx.moveTo(0, boardCanvas.height - binHeight);
+      boardCtx.lineTo(boardCanvas.width, boardCanvas.height - binHeight);
+      boardCtx.stroke();
+
+      boardCtx.fillStyle = '#ffc857';
+      for (const peg of state.pegs) {
+        boardCtx.beginPath();
+        boardCtx.arc(peg.x, peg.y, peg.radius, 0, Math.PI * 2);
+        boardCtx.fill();
+      }
+
+      for (const ball of state.balls) {
+        boardCtx.fillStyle = ball.color;
+        boardCtx.beginPath();
+        boardCtx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+        boardCtx.fill();
+      }
+    }
+
+    function drawHistogram() {
+      histCtx.clearRect(0, 0, histogramCanvas.width, histogramCanvas.height);
+      const bins = state.bins.length;
+      if (!bins) return;
+      const barWidth = histogramCanvas.width / bins;
+      const maxCount = Math.max(...state.bins, 1);
+      const mean = config.rows * 0.5;
+      const sigma = Math.max(Math.sqrt(config.rows) / 2, 0.0001);
+      const expectedPeak = normalPdf(mean, mean, sigma) * config.totalBalls;
+      const referenceMax = Math.max(maxCount, expectedPeak, 1);
+      const drawableHeight = histogramCanvas.height - 30;
+      histCtx.fillStyle = '#0b0f18';
+      histCtx.fillRect(0, 0, histogramCanvas.width, histogramCanvas.height);
+
+      state.bins.forEach((count, idx) => {
+        const height = (count / referenceMax) * drawableHeight;
+        const x = idx * barWidth;
+        const y = histogramCanvas.height - height - 10;
+        const gradient = histCtx.createLinearGradient(x, y, x, y + height);
+        gradient.addColorStop(0, '#59e4ff');
+        gradient.addColorStop(1, '#5794ff');
+        histCtx.fillStyle = gradient;
+        histCtx.fillRect(x + 4, y, barWidth - 8, height);
+      });
+
+      histCtx.strokeStyle = '#ffd166';
+      histCtx.lineWidth = 2;
+      histCtx.beginPath();
+      for (let x = 0; x <= histogramCanvas.width; x++) {
+        const binValue = (x / histogramCanvas.width) * (bins - 1);
+        const expected = normalPdf(binValue, mean, sigma) * config.totalBalls;
+        const y = histogramCanvas.height - 10 - (expected / referenceMax) * drawableHeight;
+        if (x === 0) {
+          histCtx.moveTo(x, y);
+        } else {
+          histCtx.lineTo(x, y);
+        }
+      }
+      histCtx.stroke();
+
+      histCtx.fillStyle = 'rgba(255,255,255,0.75)';
+      histCtx.font = '12px "Segoe UI", sans-serif';
+      histCtx.textAlign = 'center';
+      state.bins.forEach((count, idx) => {
+        histCtx.fillText(count, idx * barWidth + barWidth / 2, histogramCanvas.height - 2);
+      });
+    }
+
+    document.getElementById('apply').addEventListener('click', () => {
+      applyFormValues();
+      if (state.running) {
+        startRelease();
+      }
+    });
+
+    document.getElementById('start').addEventListener('click', () => {
+      applyFormValues();
+      if (!state.running) {
+        state.running = true;
+        state.lastTime = 0;
+        startRelease();
+      }
+    });
+
+    document.getElementById('pause').addEventListener('click', () => {
+      state.running = false;
+      if (state.releaseTimer) {
+        clearInterval(state.releaseTimer);
+        state.releaseTimer = null;
+      }
+    });
+
+    document.getElementById('reset').addEventListener('click', () => {
+      state.running = false;
+      state.lastTime = 0;
+      if (state.releaseTimer) {
+        clearInterval(state.releaseTimer);
+        state.releaseTimer = null;
+      }
+      rebuildBoard();
+      drawBoard();
+      drawHistogram();
+    });
+
+    gravityRange.addEventListener('input', (event) => {
+      config.gravity = parseFloat(event.target.value);
+      updateRangeLabels();
+    });
+
+    bounceRange.addEventListener('input', (event) => {
+      config.restitution = parseFloat(event.target.value);
+      updateRangeLabels();
+    });
+
+    noiseRange.addEventListener('input', (event) => {
+      config.lateralNoise = parseFloat(event.target.value);
+      updateRangeLabels();
+    });
+
+    rebuildBoard();
+    drawBoard();
+    drawHistogram();
+    updateRangeLabels();
+    requestAnimationFrame(update);
+  </script>
+</body>
+</html>
