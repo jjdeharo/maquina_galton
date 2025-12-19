@@ -748,6 +748,7 @@
         buttons: {
           start: 'Iniciar',
           pause: 'Pausa',
+          resume: 'Continuar',
           reset: 'Reiniciar'
         },
         legend: {
@@ -801,6 +802,7 @@
         buttons: {
           start: 'Inicia',
           pause: 'Pausa',
+          resume: 'Continua',
           reset: 'Reinicia'
         },
         legend: {
@@ -854,6 +856,7 @@
         buttons: {
           start: 'Iniciar',
           pause: 'Pausa',
+          resume: 'Reanudar',
           reset: 'Reiniciar'
         },
         legend: {
@@ -907,6 +910,7 @@
         buttons: {
           start: 'Hasi',
           pause: 'Pausatu',
+          resume: 'Berrekin',
           reset: 'Berrabiarazi'
         },
         legend: {
@@ -960,6 +964,7 @@
         buttons: {
           start: 'Start',
           pause: 'Pause',
+          resume: 'Resume',
           reset: 'Reset'
         },
         legend: {
@@ -1019,8 +1024,8 @@
       stats.labels.stdDev.textContent = t.stats.stdDev;
 
       buttons.start.textContent = t.buttons.start;
-      buttons.pause.textContent = t.buttons.pause;
       buttons.reset.textContent = t.buttons.reset;
+      updatePauseButtonLabel();
 
       languageSelect.value = selected;
     }
@@ -1029,6 +1034,7 @@
 
     const state = {
       running: false,
+      paused: false,
       balls: [],
       pegs: [],
       bins: [],
@@ -1122,6 +1128,19 @@
       themeButton.classList.add('active');
       themeButton.setAttribute('aria-pressed', 'true');
       updateThemeButtonLabel(mode);
+    }
+
+    function updatePauseButtonLabel() {
+      const labels = translations[currentLanguage]?.buttons || translations.es.buttons;
+      const text = state.paused ? (labels.resume || labels.pause) : labels.pause;
+      buttons.pause.textContent = text;
+    }
+
+    function stopReleaseTimer() {
+      if (state.releaseTimer) {
+        clearInterval(state.releaseTimer);
+        state.releaseTimer = null;
+      }
     }
 
     function openHelp() {
@@ -1549,30 +1568,37 @@
     }
 
     document.getElementById('start').addEventListener('click', () => {
-      const isPristine = !state.running && state.dropped === 0 && state.settled === 0 && state.balls.length === 0;
-      if (isPristine) {
-        handleConfigUpdate();
-      }
-      state.running = true;
+      stopReleaseTimer();
+      state.running = false;
+      state.paused = false;
       state.lastTime = 0;
+      handleConfigUpdate();
+      state.running = true;
       startRelease();
+      updatePauseButtonLabel();
     });
 
     document.getElementById('pause').addEventListener('click', () => {
-      state.running = false;
-      if (state.releaseTimer) {
-        clearInterval(state.releaseTimer);
-        state.releaseTimer = null;
+      if (state.running) {
+        state.running = false;
+        state.paused = true;
+        stopReleaseTimer();
+      } else if (state.paused) {
+        state.paused = false;
+        state.running = true;
+        state.lastTime = 0;
+        if (state.dropped < config.totalBalls) {
+          startRelease();
+        }
       }
+      updatePauseButtonLabel();
     });
 
     document.getElementById('reset').addEventListener('click', () => {
       state.running = false;
+      state.paused = false;
       state.lastTime = 0;
-      if (state.releaseTimer) {
-        clearInterval(state.releaseTimer);
-        state.releaseTimer = null;
-      }
+      stopReleaseTimer();
       rowsInput.value = defaultFormValues.rows;
       ballsInput.value = defaultFormValues.balls;
       intervalInput.value = defaultFormValues.interval;
@@ -1581,6 +1607,7 @@
       bounceRange.value = defaultFormValues.bounce;
       probabilityRange.value = defaultFormValues.probability;
       handleConfigUpdate();
+      updatePauseButtonLabel();
     });
 
     gravityRange.addEventListener('input', (event) => {
