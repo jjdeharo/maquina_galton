@@ -6,10 +6,91 @@
   <title>Máquina de Galton Configurable</title>
   <style>
     :root {
-      color-scheme: light dark;
+      color-scheme: dark light;
       font-family: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, "Roboto", sans-serif;
-      background-color: #101418;
-      color: #f5f7fb;
+      --text-color: #f5f7fb;
+      --body-gradient-top: #1c2430;
+      --body-gradient-bottom: #0c0f14;
+      --header-bg: rgba(4, 6, 9, 0.75);
+      --header-border: rgba(255, 255, 255, 0.07);
+      --panel-bg: rgba(255, 255, 255, 0.03);
+      --panel-border: rgba(255, 255, 255, 0.08);
+      --panel-shadow: rgba(0, 0, 0, 0.35);
+      --input-bg: rgba(0, 0, 0, 0.25);
+      --input-border: rgba(255, 255, 255, 0.15);
+      --stats-bg: rgba(255, 255, 255, 0.02);
+      --stats-border: rgba(255, 255, 255, 0.05);
+      --canvas-bg: radial-gradient(circle at top, rgba(17, 26, 36, 0.85), rgba(9, 12, 18, 0.95));
+      --canvas-border: rgba(255, 255, 255, 0.08);
+      --hist-bg: #0b0f18;
+      --board-bg: #0c131b;
+      --board-bin: rgba(255, 255, 255, 0.08);
+      --board-line: rgba(255, 255, 255, 0.1);
+      --legend-bg: rgba(8, 10, 15, 0.75);
+      --legend-border: rgba(255, 255, 255, 0.08);
+      --legend-text: #f4f7ff;
+      --tooltip-bg: rgba(255, 244, 218, 0.95);
+      --tooltip-color: #0c1117;
+      --tooltip-border: rgba(12, 17, 23, 0.08);
+      --tooltip-shadow: rgba(12, 17, 23, 0.35);
+      background-color: var(--body-gradient-bottom);
+      color: var(--text-color);
+    }
+
+    :root[data-theme="dark"] {
+      color-scheme: dark;
+    }
+
+    :root[data-theme="light"] {
+      color-scheme: light;
+      --text-color: #0f1b2b;
+      --body-gradient-top: #f2f6ff;
+      --body-gradient-bottom: #dfe8f7;
+      --header-bg: rgba(255, 255, 255, 0.9);
+      --header-border: rgba(15, 23, 42, 0.08);
+      --panel-bg: rgba(255, 255, 255, 0.92);
+      --panel-border: rgba(15, 23, 42, 0.12);
+      --panel-shadow: rgba(14, 22, 34, 0.15);
+      --input-bg: rgba(15, 23, 42, 0.08);
+      --input-border: rgba(15, 23, 42, 0.18);
+      --stats-bg: rgba(15, 23, 42, 0.05);
+      --stats-border: rgba(15, 23, 42, 0.12);
+      --canvas-bg: radial-gradient(circle at top, rgba(255, 255, 255, 0.9), rgba(232, 239, 254, 0.95));
+      --canvas-border: rgba(15, 23, 42, 0.15);
+      --hist-bg: #f4f7ff;
+      --board-bg: #eef4ff;
+      --board-bin: rgba(15, 23, 42, 0.08);
+      --board-line: rgba(15, 23, 42, 0.2);
+      --legend-bg: rgba(255, 255, 255, 0.9);
+      --legend-border: rgba(15, 23, 42, 0.12);
+      --legend-text: #0f1b2b;
+    }
+
+    @media (prefers-color-scheme: light) {
+      :root:not([data-theme]) {
+        --text-color: #0f1b2b;
+        --body-gradient-top: #f2f6ff;
+        --body-gradient-bottom: #dfe8f7;
+        --header-bg: rgba(255, 255, 255, 0.9);
+        --header-border: rgba(15, 23, 42, 0.08);
+        --panel-bg: rgba(255, 255, 255, 0.92);
+        --panel-border: rgba(15, 23, 42, 0.12);
+        --panel-shadow: rgba(14, 22, 34, 0.15);
+        --input-bg: rgba(15, 23, 42, 0.08);
+        --input-border: rgba(15, 23, 42, 0.18);
+        --stats-bg: rgba(15, 23, 42, 0.05);
+        --stats-border: rgba(15, 23, 42, 0.12);
+        --canvas-bg: radial-gradient(circle at top, rgba(255, 255, 255, 0.9), rgba(232, 239, 254, 0.95));
+        --canvas-border: rgba(15, 23, 42, 0.15);
+        --hist-bg: #f4f7ff;
+        --board-bg: #eef4ff;
+        --board-bin: rgba(15, 23, 42, 0.08);
+        --board-line: rgba(15, 23, 42, 0.2);
+        --legend-bg: rgba(255, 255, 255, 0.9);
+        --legend-border: rgba(15, 23, 42, 0.12);
+        --legend-text: #0f1b2b;
+        color-scheme: light;
+      }
     }
 
     * {
@@ -21,15 +102,129 @@
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      background: radial-gradient(circle at top, #1c2430 0%, #0c0f14 70%);
+      color: var(--text-color);
+      background: radial-gradient(circle at top, var(--body-gradient-top) 0%, var(--body-gradient-bottom) 70%);
     }
 
     header {
       padding: 1.5rem;
       text-align: center;
-      background: rgba(4, 6, 9, 0.75);
+      background: var(--header-bg);
       backdrop-filter: blur(8px);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+      border-bottom: 1px solid var(--header-border);
+    }
+
+    .header-content {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      text-align: left;
+    }
+
+    .header-text {
+      flex: 1;
+      min-width: 260px;
+    }
+
+    .language-selector {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.85rem;
+      font-size: 0.9rem;
+      min-width: 320px;
+      justify-content: flex-end;
+      align-items: flex-end;
+    }
+
+    .selector-control {
+      display: flex;
+      flex-direction: column;
+      min-width: 180px;
+      position: relative;
+      flex: 1;
+    }
+
+    .selector-control select {
+      width: 100%;
+      padding: 0.45rem 2.4rem 0.45rem 0.85rem;
+      border-radius: 999px;
+      border: 1px solid var(--input-border);
+      background: linear-gradient(160deg, rgba(255,255,255,0.1), rgba(255,255,255,0.03));
+      backdrop-filter: blur(6px);
+      color: var(--text-color);
+      font-size: 0.92rem;
+      appearance: none;
+      cursor: pointer;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      min-height: 2.25rem;
+    }
+
+    .selector-control select:focus {
+      outline: none;
+      border-color: rgba(89, 228, 255, 0.9);
+      box-shadow: 0 0 0 3px rgba(89, 228, 255, 0.25);
+    }
+
+    .selector-control::after {
+      content: '';
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      width: 0.55rem;
+      height: 0.55rem;
+      border-right: 2px solid currentColor;
+      border-bottom: 2px solid currentColor;
+      transform: translateY(-50%) rotate(45deg);
+      pointer-events: none;
+      opacity: 0.8;
+    }
+
+    .theme-toggle {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .theme-button {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      border: 1px solid var(--input-border);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.04));
+      color: var(--text-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+    }
+
+    .theme-button:hover {
+      transform: translateY(-1px);
+    }
+
+    .theme-button.active {
+      border-color: rgba(89, 228, 255, 0.95);
+      box-shadow: 0 0 0 3px rgba(89, 228, 255, 0.25);
+    }
+
+    .theme-button svg {
+      display: none;
+      width: 26px;
+      height: 26px;
+      fill: none;
+      stroke: currentColor;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-width: 1.7;
+    }
+
+    .theme-button[data-mode="auto"] .theme-icon-auto,
+    .theme-button[data-mode="light"] .theme-icon-light,
+    .theme-button[data-mode="dark"] .theme-icon-dark {
+      display: block;
     }
 
     main {
@@ -46,11 +241,11 @@
     }
 
     .panel {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-border);
       border-radius: 18px;
       padding: 1rem 1.25rem 1.5rem;
-      box-shadow: 0 16px 32px rgba(0, 0, 0, 0.35);
+      box-shadow: 0 16px 32px var(--panel-shadow);
       backdrop-filter: blur(12px);
     }
 
@@ -72,6 +267,49 @@
       justify-content: space-between;
       align-items: center;
       gap: 0.5rem;
+      position: relative;
+    }
+
+    label[data-tooltip]::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      left: 0;
+      top: 100%;
+      transform: translateY(0.35rem);
+      background: var(--tooltip-bg);
+      color: var(--tooltip-color);
+      border-radius: 8px;
+      padding: 0.45rem 0.65rem;
+      font-size: 0.75rem;
+      line-height: 1.2;
+      opacity: 0;
+      pointer-events: none;
+      width: min(320px, 80vw);
+      box-shadow: 0 12px 28px var(--tooltip-shadow);
+      border: 1px solid var(--tooltip-border);
+      transition: opacity 0.15s ease;
+      z-index: 2;
+    }
+
+    label[data-tooltip]:hover::after {
+      opacity: 1;
+    }
+
+    .label-text {
+      flex: 1;
+      line-height: 1.3;
+    }
+
+    .label-textual {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      gap: 0.15rem;
+    }
+
+    .probability-values {
+      font-size: 0.8rem;
+      opacity: 0.85;
     }
 
     input[type="number"], input[type="range"] {
@@ -85,9 +323,9 @@
     input[type="number"], select {
       padding: 0.35rem 0.5rem;
       border-radius: 8px;
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      background: rgba(0, 0, 0, 0.25);
-      color: inherit;
+      border: 1px solid var(--input-border);
+      background: var(--input-bg);
+      color: var(--text-color);
       width: 5rem;
       text-align: center;
     }
@@ -108,12 +346,36 @@
       box-shadow: 0 10px 20px rgba(89, 228, 255, 0.35);
     }
 
+    .help-button {
+      margin-left: auto;
+      margin-top: 0.75rem;
+      background: transparent;
+      color: var(--text-color);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 0.45rem 1rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.9rem;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .help-button svg {
+      width: 18px;
+      height: 18px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.6;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
     canvas {
       width: 100%;
       height: auto;
       border-radius: 14px;
-      background: radial-gradient(circle at top, rgba(17, 26, 36, 0.85), rgba(9, 12, 18, 0.95));
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: var(--canvas-bg);
+      border: 1px solid var(--canvas-border);
     }
 
     .stats {
@@ -129,8 +391,8 @@
       min-width: 140px;
       padding: 0.75rem;
       border-radius: 12px;
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--stats-border);
+      background: var(--stats-bg);
     }
 
     .controls {
@@ -161,48 +423,157 @@
         min-height: 320px;
       }
     }
+
+    footer {
+      text-align: center;
+      padding: 1.25rem 1rem 1.75rem;
+      background: var(--header-bg);
+      border-top: 1px solid var(--header-border);
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+
+    footer a {
+      color: inherit;
+      text-decoration: underline;
+    }
+
+    .github-icon {
+      width: 1em;
+      height: 1em;
+      margin-right: 0.35rem;
+      vertical-align: -0.15em;
+      fill: currentColor;
+    }
+
+    .help-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.65);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 20;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+      padding: 1rem;
+    }
+
+    .help-modal.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .help-content {
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-border);
+      border-radius: 20px;
+      max-width: 640px;
+      width: 100%;
+      padding: 1.5rem;
+      box-shadow: 0 25px 45px rgba(0, 0, 0, 0.45);
+      backdrop-filter: blur(16px);
+      color: var(--text-color);
+    }
+
+    .help-content h2 {
+      margin-top: 0;
+      margin-bottom: 0.75rem;
+    }
+
+    .help-content p {
+      line-height: 1.6;
+    }
+
+    .help-close {
+      margin-top: 1.25rem;
+      width: 100%;
+      border-radius: 12px;
+    }
   </style>
 </head>
 <body>
   <header>
-    <h1>Máquina de Galton interactiva</h1>
-    <p>Explora la distribución binomial ajustando el número de filas, la velocidad de caída, la gravedad y otros parámetros.</p>
+    <div class="header-content">
+      <div class="header-text">
+        <h1 id="app-title">Máquina de Galton interactiva</h1>
+        <p id="app-subtitle">Explora la distribución binomial ajustando el número de filas, la velocidad de caída, la gravedad y otros parámetros.</p>
+        <button class="help-button" id="help-button" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M9.5 9.5a2.5 2.5 0 115 0c0 1.5-2.5 1.5-2.5 3m0 3.5h.01"></path>
+          </svg>
+          <span id="help-button-text">Ayuda</span>
+        </button>
+      </div>
+      <div class="language-selector">
+        <label class="selector-control">
+          <select id="language" aria-label="Idioma">
+            <option value="es">Español</option>
+            <option value="ca">Català</option>
+            <option value="ga">Galego</option>
+            <option value="eu">Euskara</option>
+            <option value="en">English</option>
+          </select>
+        </label>
+        <div class="theme-toggle" id="theme-toggle" role="group" aria-label="Tema">
+          <button type="button" id="theme-button" class="theme-button active" data-mode="auto" aria-label="Automático" title="Automático" aria-pressed="true">
+            <svg class="theme-icon theme-icon-auto" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="8" />
+              <path d="M12 4a8 8 0 010 16" />
+            </svg>
+            <svg class="theme-icon theme-icon-light" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="4.5" />
+              <path d="M12 2v3M12 19v3M5 12H2M22 12h-3M5.6 5.6L3.8 3.8M20.2 20.2l-1.8-1.8M18.4 5.6l1.8-1.8M3.8 20.2l1.8-1.8" />
+            </svg>
+            <svg class="theme-icon theme-icon-dark" viewBox="0 0 24 24">
+              <path d="M16.5 3a7.5 7.5 0 01-7 10.5 7.5 7.5 0 106.5-10.5z" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
   </header>
 
   <main>
     <section class="panel">
-      <h2>Configuración</h2>
+      <h2 id="config-title">Configuración</h2>
       <form id="config-form">
-        <label>
-          Filas de clavos
-          <input type="number" id="rows" min="4" max="16" value="10" required>
+        <label id="rows-label-wrapper" data-tooltip="Más filas de clavos generan más desvíos aleatorios y ensanchan la distribución (mayor desviación típica).">
+          <span class="label-text" id="rows-label">Filas de clavos</span>
+          <input type="number" id="rows" min="4" max="16" value="10" data-default="10" required>
         </label>
-        <label>
-          Bolas totales
-          <input type="number" id="balls" min="20" max="1000" step="10" value="200" required>
+        <label id="balls-label-wrapper" data-tooltip="Un número alto de bolas suaviza el histograma; pocas bolas dejan más ruido estadístico.">
+          <span class="label-text" id="balls-label">Bolas totales</span>
+          <input type="number" id="balls" min="20" max="1000" step="10" value="200" data-default="200" required>
         </label>
-        <label>
-          Intervalo de disparo (ms)
-          <input type="number" id="interval" min="50" max="1000" step="25" value="120">
+        <label id="interval-label-wrapper" data-tooltip="Reduce el intervalo para soltar las bolas más rápido; auméntalo si quieres observar trayectorias individuales.">
+          <span class="label-text" id="interval-label">Intervalo de disparo (ms)</span>
+          <input type="number" id="interval" min="50" max="1000" step="25" value="120" data-default="120">
         </label>
-        <label>
-          Radio de bola (px)
-          <input type="number" id="ball-radius" min="4" max="10" value="6">
+        <label id="radius-label-wrapper" data-tooltip="Un radio mayor aumenta el contacto con los clavos y modera la dispersión; uno menor deja pasar las bolas por huecos estrechos.">
+          <span class="label-text" id="radius-label">Radio de bola (px)</span>
+          <input type="number" id="ball-radius" min="4" max="10" value="6" data-default="6">
         </label>
-        <label>
-          Gravedad (<span class="range-value" id="gravity-value">650</span>)
-          <input type="range" id="gravity" min="200" max="900" value="650">
+        <label id="gravity-label-wrapper" data-tooltip="Ajusta la aceleración expresada en múltiplos de g terrestre para acelerar o ralentizar la caída.">
+          <span class="label-text" id="gravity-label">Gravedad (g)</span>
+          <span class="range-value" id="gravity-value">1.00 g (9.81 m/s²)</span>
+          <input type="range" id="gravity" min="0.4" max="1.6" step="0.05" value="1" data-default="1">
         </label>
-        <label>
-          Rebote elástico (<span class="range-value" id="bounce-value">0.45</span>)
-          <input type="range" id="bounce" min="0.1" max="0.9" step="0.05" value="0.45">
+        <label id="bounce-label-wrapper" data-tooltip="Valores altos de rebote conservan la energía tras cada fila y mantienen la dispersión; valores bajos amortiguan los choques.">
+          <span class="label-text" id="bounce-label">Rebote elástico</span>
+          <span class="range-value" id="bounce-value">0.45</span>
+          <input type="range" id="bounce" min="0.1" max="0.9" step="0.05" value="0.45" data-default="0.45">
         </label>
-        <label>
-          Ruido lateral (<span class="range-value" id="noise-value">0.15</span>)
-          <input type="range" id="noise" min="0" max="0.8" step="0.05" value="0.15">
+        <label id="probability-label-wrapper" data-tooltip="Ajusta la probabilidad de desviarse a la derecha (p). El complemento (1-p) es la probabilidad de ir a la izquierda.">
+          <div class="label-textual">
+            <span class="label-text" id="probability-label">Probabilidad hacia la derecha p (p / 1-p)</span>
+            <span class="probability-values">p = <span class="range-value" id="probability-value">0.50</span> · (1-p) = <span class="range-value" id="probability-complement">0.50</span></span>
+          </div>
+          <input type="range" id="probability" min="0" max="1" step="0.01" value="0.5" data-default="0.5">
         </label>
         <div class="controls">
-          <button type="button" id="apply">Aplicar cambios</button>
           <button type="button" id="start">Iniciar</button>
           <button type="button" id="pause">Pausa</button>
           <button type="button" id="reset">Reiniciar</button>
@@ -210,30 +581,47 @@
       </form>
       <div class="stats">
         <div>
-          <strong>Bolas liberadas</strong>
+          <strong id="released-label">Bolas liberadas</strong>
           <div id="released">0</div>
         </div>
         <div>
-          <strong>Bolas finalizadas</strong>
+          <strong id="settled-label">Bolas finalizadas</strong>
           <div id="settled">0</div>
         </div>
         <div>
-          <strong>Desviación típica</strong>
+          <strong id="std-dev-label">Desviación típica</strong>
           <div id="std-dev">0</div>
         </div>
       </div>
     </section>
 
     <section class="panel">
-      <h2>Tablero</h2>
+      <h2 id="board-title">Tablero</h2>
       <canvas id="board" width="640" height="720"></canvas>
     </section>
 
     <section class="panel">
-      <h2>Histograma de aterrizajes</h2>
+      <h2 id="histogram-title">Histograma de aterrizajes</h2>
       <canvas id="histogram" width="640" height="320"></canvas>
     </section>
   </main>
+
+  <div class="help-modal" id="help-modal" aria-hidden="true">
+    <div class="help-content" role="dialog" aria-modal="true" aria-labelledby="help-title">
+      <h2 id="help-title">¿Qué es esta máquina?</h2>
+      <div id="help-body">
+        <p>La Máquina de Galton, también llamada tablero de clavos, es un dispositivo ideado por Francis Galton para mostrar cómo una sucesión de decisiones binarias genera la distribución binomial.</p>
+      </div>
+      <button class="help-close" id="help-close" type="button">Cerrar</button>
+    </div>
+  </div>
+
+  <footer>
+    <div>© <a href="https://bilateria.org" target="_blank" rel="noopener noreferrer">Juan José de Haro</a> · <a href="https://github.com/jjdeharo/maquina_galton" target="_blank" rel="noopener noreferrer"><svg class="github-icon" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M8 0C3.58 0 0 3.66 0 8.18c0 3.62 2.29 6.69 5.47 7.78.4.08.55-.18.55-.39 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.5-2.69-.96-.09-.24-.48-.98-.82-1.18-.28-.15-.68-.52-.01-.53.63-.01 1.08.59 1.23.83.72 1.24 1.87.89 2.33.68.07-.53.28-.89.51-1.09-1.78-.21-3.64-.92-3.64-4.09 0-.9.31-1.63.83-2.2-.08-.21-.36-1.07.08-2.23 0 0 .67-.22 2.2.84.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.06 2.2-.84 2.2-.84.44 1.16.16 2.02.08 2.23.52.57.83 1.3.83 2.2 0 3.18-1.87 3.88-3.65 4.09.29.26.54.77.54 1.56 0 1.13-.01 2.04-.01 2.31 0 .21.15.47.55.39C13.71 14.87 16 11.8 16 8.18 16 3.66 12.42 0 8 0z"></path></svg>Repositorio en GitHub</a></div>
+    <div>
+      Licencia del código: <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener noreferrer">AGPL v3</a> · Contenido: <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener noreferrer">CC BY-SA 4.0</a>
+    </div>
+  </footer>
 
   <script>
     const boardCanvas = document.getElementById('board');
@@ -242,18 +630,402 @@
     const histCtx = histogramCanvas.getContext('2d');
 
     const form = document.getElementById('config-form');
+    const rowsInput = document.getElementById('rows');
+    const ballsInput = document.getElementById('balls');
+    const intervalInput = document.getElementById('interval');
+    const radiusInput = document.getElementById('ball-radius');
     const gravityRange = document.getElementById('gravity');
     const gravityValue = document.getElementById('gravity-value');
     const bounceRange = document.getElementById('bounce');
     const bounceValue = document.getElementById('bounce-value');
-    const noiseRange = document.getElementById('noise');
-    const noiseValue = document.getElementById('noise-value');
+    const probabilityRange = document.getElementById('probability');
+    const probabilityValue = document.getElementById('probability-value');
+    const probabilityComplement = document.getElementById('probability-complement');
+    const languageSelect = document.getElementById('language');
+    const themeToggleGroup = document.getElementById('theme-toggle');
+    const themeButton = document.getElementById('theme-button');
+    const THEME_MODES = ['auto', 'light', 'dark'];
+    const helpButton = document.getElementById('help-button');
+    const helpButtonText = document.getElementById('help-button-text');
+    const helpModal = document.getElementById('help-modal');
+    const helpTitle = document.getElementById('help-title');
+    const helpBody = document.getElementById('help-body');
+    const helpClose = document.getElementById('help-close');
+    const EARTH_GRAVITY = 9.81;
+    const PX_PER_G = 650;
+    const GRAVITY_MIN = parseFloat(gravityRange.min);
+    const GRAVITY_MAX = parseFloat(gravityRange.max);
 
     const stats = {
       released: document.getElementById('released'),
       settled: document.getElementById('settled'),
-      stdDev: document.getElementById('std-dev')
+      stdDev: document.getElementById('std-dev'),
+      labels: {
+        released: document.getElementById('released-label'),
+        settled: document.getElementById('settled-label'),
+        stdDev: document.getElementById('std-dev-label')
+      }
     };
+
+    const textElements = {
+      title: document.getElementById('app-title'),
+      subtitle: document.getElementById('app-subtitle'),
+      configTitle: document.getElementById('config-title'),
+      boardTitle: document.getElementById('board-title'),
+      histogramTitle: document.getElementById('histogram-title')
+    };
+
+    const labelElements = {
+      rows: document.getElementById('rows-label'),
+      balls: document.getElementById('balls-label'),
+      interval: document.getElementById('interval-label'),
+      radius: document.getElementById('radius-label'),
+      gravity: document.getElementById('gravity-label'),
+      bounce: document.getElementById('bounce-label'),
+      probability: document.getElementById('probability-label')
+    };
+
+    const labelWrappers = {
+      rows: document.getElementById('rows-label-wrapper'),
+      balls: document.getElementById('balls-label-wrapper'),
+      interval: document.getElementById('interval-label-wrapper'),
+      radius: document.getElementById('radius-label-wrapper'),
+      gravity: document.getElementById('gravity-label-wrapper'),
+      bounce: document.getElementById('bounce-label-wrapper'),
+      probability: document.getElementById('probability-label-wrapper')
+    };
+
+    const buttons = {
+      start: document.getElementById('start'),
+      pause: document.getElementById('pause'),
+      reset: document.getElementById('reset')
+    };
+
+    const translations = {
+      es: {
+        pageTitle: 'Máquina de Galton Configurable',
+        languageLabel: 'Idioma',
+        themeLabel: 'Tema',
+        themeOptions: {
+          auto: 'Automático',
+          light: 'Claro',
+          dark: 'Oscuro'
+        },
+        helpButton: 'Ayuda',
+        helpTitle: '¿Qué es la Máquina de Galton?',
+        helpContent: `<p>La Máquina de Galton, también llamada tablero de clavos, es un experimento ideado por Francis Galton para demostrar cómo una sucesión de decisiones binarias produce la distribución binomial, que al aumentar el número de ensayos adopta la forma acampanada de la distribución normal.</p>
+        <p>Cada bola cae fila a fila y en cada clavo puede desviarse a la derecha con probabilidad p o a la izquierda con 1-p; el número total de desvíos a la derecha determina el compartimento en el que aterriza, visualizando así cómo los resultados se concentran alrededor de los valores centrales y disminuyen en los extremos.</p>
+        <p>Ajusta el número de filas, la probabilidad p, el rebote, la cantidad de bolas, el intervalo de disparo o la gravedad expresada en múltiplos de g para observar cómo cambian la dispersión y la curva teórica y para explicar fenómenos de probabilidad y estadística de forma experimental.</p>`,
+        helpClose: 'Cerrar',
+        title: 'Máquina de Galton interactiva',
+        subtitle: 'Explora la distribución binomial ajustando el número de filas, la velocidad de caída, la gravedad y otros parámetros.',
+        configTitle: 'Configuración',
+        boardTitle: 'Tablero',
+        histogramTitle: 'Histograma de aterrizajes',
+        labels: {
+          rows: 'Filas de clavos',
+          balls: 'Bolas totales',
+          interval: 'Intervalo de disparo (ms)',
+          radius: 'Radio de bola (px)',
+          gravity: 'Gravedad (g)',
+          bounce: 'Rebote elástico',
+          probability: 'Probabilidad hacia la derecha p (p / 1-p)'
+        },
+        tooltips: {
+          rows: 'Más filas de clavos generan más desvíos aleatorios y ensanchan la distribución (mayor desviación típica).',
+          balls: 'Un número alto de bolas suaviza el histograma; pocas bolas dejan más ruido estadístico.',
+          interval: 'Reduce el intervalo para soltar las bolas más rápido; auméntalo si quieres observar trayectorias individuales.',
+          radius: 'Un radio mayor aumenta el contacto con los clavos y modera la dispersión; uno menor deja pasar las bolas por huecos estrechos.',
+          gravity: 'Ajusta la aceleración en múltiplos de g terrestre (9,81 m/s²) para acelerar o ralentizar la caída.',
+          bounce: 'Valores altos de rebote conservan la energía tras cada fila y mantienen la dispersión; valores bajos amortiguan los choques.',
+          probability: 'Ajusta la probabilidad de desviarse a la derecha (p). El complemento (1-p) es la probabilidad de ir a la izquierda.'
+        },
+        stats: {
+          released: 'Bolas liberadas',
+          settled: 'Bolas finalizadas',
+          stdDev: 'Desviación típica'
+        },
+        buttons: {
+          start: 'Iniciar',
+          pause: 'Pausa',
+          reset: 'Reiniciar'
+        },
+        legend: {
+          normal: 'Normal (Gauss)',
+          binomial: 'Binomial exacta'
+        }
+      },
+      ca: {
+        pageTitle: 'Màquina de Galton configurable',
+        languageLabel: 'Llengua',
+        themeLabel: 'Tema',
+        themeOptions: {
+          auto: 'Automàtic',
+          light: 'Clar',
+          dark: 'Fosc'
+        },
+        helpButton: 'Ajuda',
+        helpTitle: 'Què és la màquina de Galton?',
+        helpContent: `<p>La màquina de Galton, també coneguda com a tauler de claus, és un experiment ideat per Francis Galton per mostrar com moltes decisions binàries consecutives generen una distribució binomial que, amb molts intents, s'aproxima a la campana de Gauss.</p>
+        <p>En cada fila la bola pot desviar-se cap a la dreta amb probabilitat p o cap a l'esquerra amb 1-p; el nombre de desviacions a la dreta determina el compartiment final i permet veure com els resultats es concentren al voltant dels valors centrals i decreixen als extrems.</p>
+        <p>Modifica les files, la probabilitat p, el rebot, la quantitat de boles, l'interval de llançament o la gravetat expressada en múltiples de g per observar com varia la dispersió i explicar fenòmens de probabilitat i estadística de manera experimental.</p>`,
+        helpClose: 'Tanca',
+        title: 'Màquina de Galton interactiva',
+        subtitle: 'Explora la distribució binomial ajustant el nombre de files, la velocitat de caiguda, la gravetat i altres paràmetres.',
+        configTitle: 'Configuració',
+        boardTitle: 'Tauler',
+        histogramTitle: "Histograma d'aterratges",
+        labels: {
+          rows: 'Files de claus',
+          balls: 'Boles totals',
+          interval: 'Interval de llançament (ms)',
+          radius: 'Radi de bola (px)',
+          gravity: 'Gravetat (g)',
+          bounce: 'Rebot elàstic',
+          probability: 'Probabilitat de desviar-se a la dreta p (p / 1-p)'
+        },
+        tooltips: {
+          rows: 'Més files de claus generen més desviacions aleatòries i eixamplen la distribució (desviació estàndard més gran).',
+          balls: "Un nombre alt de boles suavitza l'histograma; poques boles deixen més soroll estadístic.",
+          interval: 'Redueix el temps entre llançaments per deixar anar les boles més ràpid; allarga\'l si vols observar trajectòries individuals.',
+          radius: 'Un radi major incrementa el contacte amb els claus i modera la dispersió; un radi menor passa per espais estrets.',
+          gravity: 'Expressa la gravetat en múltiples de g terrestre (9,81 m/s²) per accelerar o frenar la caiguda.',
+          bounce: "Un rebot alt conserva l'energia després de cada fila i manté la dispersió; valors baixos amortiguen els impactes.",
+          probability: 'Ajusta la probabilitat de desviar-se cap a la dreta (p). El complement (1-p) és la probabilitat d\'anar cap a l\'esquerra.'
+        },
+        stats: {
+          released: 'Boles alliberades',
+          settled: 'Boles estabilitzades',
+          stdDev: 'Desviació estàndard'
+        },
+        buttons: {
+          start: 'Inicia',
+          pause: 'Pausa',
+          reset: 'Reinicia'
+        },
+        legend: {
+          normal: 'Normal (Gauss)',
+          binomial: 'Binomial exacta'
+        }
+      },
+      ga: {
+        pageTitle: 'Máquina de Galton configurábel',
+        languageLabel: 'Lingua',
+        themeLabel: 'Tema',
+        themeOptions: {
+          auto: 'Automático',
+          light: 'Claro',
+          dark: 'Escuro'
+        },
+        helpButton: 'Axuda',
+        helpTitle: 'Que é a Máquina de Galton?',
+        helpContent: `<p>A Máquina de Galton, ou taboleiro de cravos, é un experimento creado por Francis Galton para amosar como unha cadea de decisións binarias produce a distribución binomial, que con moitos ensaios adopta a forma da distribución normal.</p>
+        <p>Cada bola baixa fileira a fileira e en cada cravo pode ir á dereita con probabilidade p ou á esquerda con 1-p; o número de movementos cara á dereita determina o compartimento no que aterra e permítenos ver como os resultados se acumulan arredor dos valores centrais.</p>
+        <p>A xusta as fileiras, a probabilidade p, o rebote, o número de bolas, o intervalo de lanzamento ou a gravidade expresada en múltiplos de g para analizar como varía a dispersión e explicar conceptos de probabilidade e estatística dun modo visual.</p>`,
+        helpClose: 'Pechar',
+        title: 'Máquina de Galton interactiva',
+        subtitle: 'Explora a distribución binomial axustando o número de filas, a velocidade de caída, a gravidade e outros parámetros.',
+        configTitle: 'Configuración',
+        boardTitle: 'Taboleiro',
+        histogramTitle: 'Histograma de aterrizaxes',
+        labels: {
+          rows: 'Filas de cravos',
+          balls: 'Bolas totais',
+          interval: 'Intervalo de disparo (ms)',
+          radius: 'Raio da bola (px)',
+          gravity: 'Gravidade (g)',
+          bounce: 'Rebote elástico',
+          probability: 'Probabilidade de ir á dereita p (p / 1-p)'
+        },
+        tooltips: {
+          rows: 'Máis filas de cravos xeran máis desviacións aleatorias e ensanchan a distribución (maior desviación típica).',
+          balls: 'Un número alto de bolas suaviza o histograma; poucas bolas deixan máis ruído estatístico.',
+          interval: 'Reduce o intervalo para soltar as bolas máis rápido; auméntao se queres seguir traxectorias individuais.',
+          radius: 'Un raio maior incrementa o contacto cos cravos e modera a dispersión; un menor permite pasar por ocos estreitos.',
+          gravity: 'Configura a aceleración en múltiplos de g terrestre (9,81 m/s²) para controlar a velocidade de caída.',
+          bounce: 'Un rebote alto conserva a enerxía tras cada fila e mantén a dispersión; valores baixos amortiguan os impactos.',
+          probability: 'Axusta a probabilidade de desviar á dereita (p). O complemento (1-p) é a probabilidade de ir á esquerda.'
+        },
+        stats: {
+          released: 'Bolas liberadas',
+          settled: 'Bolas rematadas',
+          stdDev: 'Desviación típica'
+        },
+        buttons: {
+          start: 'Iniciar',
+          pause: 'Pausa',
+          reset: 'Reiniciar'
+        },
+        legend: {
+          normal: 'Normal (Gauss)',
+          binomial: 'Binomial exacta'
+        }
+      },
+      eu: {
+        pageTitle: 'Galton makina konfigurablea',
+        languageLabel: 'Hizkuntza',
+        themeLabel: 'Gaia',
+        themeOptions: {
+          auto: 'Automatikoa',
+          light: 'Argia',
+          dark: 'Iluna'
+        },
+        helpButton: 'Laguntza',
+        helpTitle: 'Zer da Galton makina?',
+        helpContent: `<p>Galton makina, pintxo-taula izenez ere ezaguna, Francis Galtonek sortutako esperimentua da, erabaki binario jarraituen bidez banaketa binomiala eta haren antzekotasuna banaketa normalarekin azaltzeko.</p>
+        <p>Bola bakoitzak ilara bakoitzean eskuinera jo dezake probabilitate p-rekin edo ezkerrera 1-p-rekin; eskuinerako desbideratze kopuruak helmuga zehazten du eta emaitzak erdiguneko balioen inguruan pilatu eta muturretan gutxitzen direla ikus daiteke.</p>
+        <p>Ezarri ilara kopurua, probabilitatea, errebotea, bolen kopurua, jaurtiketa-intervaloa edo g-etan adierazitako grabitatea eta ikus nola aldatzen diren sakabanaketa eta kurba teorikoa, probabilitatea eta estatistika modu esperimentalean irakasteko.</p>`,
+        helpClose: 'Itxi',
+        title: 'Galton makina interaktiboa',
+        subtitle: 'Banaketa binomiala aztertu ilara kopurua, erorketa abiadura, grabitatea eta beste parametroak doituz.',
+        configTitle: 'Konfigurazioa',
+        boardTitle: 'Taula',
+        histogramTitle: 'Lurreratzeen histograma',
+        labels: {
+          rows: 'Pintxo ilarak',
+          balls: 'Bola kopurua',
+          interval: 'Jaurtiketa tartea (ms)',
+          radius: 'Bola erradioa (px)',
+          gravity: 'Grabitatea (g)',
+          bounce: 'Errebote elastikoa',
+          probability: 'Eskuinera joateko probabilitatea p (p / 1-p)'
+        },
+        tooltips: {
+          rows: 'Pintxo gehiago = ausazko desbideratze gehiago eta banaketa zabalagoa (desbideratze estandarra handiagoa).',
+          balls: 'Bola gehiago = histograma leunagoa; gutxiago = zarata estatistiko handiagoa.',
+          interval: 'Tartea txikitu bolak azkarrago jaurtitzeko; handitu ibilbideak banan-banan ikusteko.',
+          radius: 'Erradio handiak pintxoekin kontaktu handiagoa du eta sakabanaketa moderatzen du; erradio txikiak zirrikitu estuetatik igarotzea ahalbidetzen du.',
+          gravity: 'Grabitazioa g-etan (9,81 m/s²) adierazi eta balioa handituz edo txikituz beherakadaren abiadura erregulatu.',
+          bounce: 'Errebote balio handiak energia mantentzen du eta sakabanaketa zabala bermatzen du; baxuek talkak xurgatzen dituzte.',
+          probability: 'Doitu eskuinera desbideratzeko probabilitatea (p); (1-p) ezkerrerako probabilitatea da.'
+        },
+        stats: {
+          released: 'Askatu diren bolak',
+          settled: 'Amaitutako bolak',
+          stdDev: 'Desbideratze estandarra'
+        },
+        buttons: {
+          start: 'Hasi',
+          pause: 'Pausatu',
+          reset: 'Berrabiarazi'
+        },
+        legend: {
+          normal: 'Normal (Gauss)',
+          binomial: 'Binomial zehatza'
+        }
+      },
+      en: {
+        pageTitle: 'Configurable Galton Board',
+        languageLabel: 'Language',
+        themeLabel: 'Theme',
+        themeOptions: {
+          auto: 'Auto',
+          light: 'Light',
+          dark: 'Dark'
+        },
+        helpButton: 'Help',
+        helpTitle: 'What is the Galton Board?',
+        helpContent: `<p>The Galton Board, or bean machine, is an experiment devised by Francis Galton to show how a chain of binary decisions yields the binomial distribution, which with many trials resembles the bell-shaped normal distribution.</p>
+        <p>Each ball drops row by row and at every pin may move right with probability p or left with 1-p; the number of right turns determines the bin where it lands, illustrating how random outcomes cluster around the center and thin out at the extremes.</p>
+        <p>Adjust the number of rows, the probability p, bounce, ball count, launch interval or the gravity expressed in multiples of g to see how the spread and the theoretical curve change and to explain probability and statistics concepts hands-on.</p>`,
+        helpClose: 'Close',
+        title: 'Interactive Galton Board',
+        subtitle: 'Explore the binomial distribution by tuning the number of rows, drop speed, gravity, and other parameters.',
+        configTitle: 'Configuration',
+        boardTitle: 'Board',
+        histogramTitle: 'Landing histogram',
+        labels: {
+          rows: 'Peg rows',
+          balls: 'Total balls',
+          interval: 'Launch interval (ms)',
+          radius: 'Ball radius (px)',
+          gravity: 'Gravity (g)',
+          bounce: 'Elastic bounce',
+          probability: 'Probability of moving right p (p / 1-p)'
+        },
+        tooltips: {
+          rows: 'More peg rows create additional random deflections and widen the distribution (larger standard deviation).',
+          balls: 'More balls smooth the histogram; fewer balls leave more statistical noise.',
+          interval: 'Decrease the interval to drop balls faster; increase it to inspect individual paths.',
+          radius: 'A larger radius increases contact with pegs and tames dispersion; a smaller one slips through narrow gaps.',
+          gravity: 'Set the acceleration using Earth-gravity multiples (9.81 m/s²) to speed up or slow down the fall.',
+          bounce: 'High bounce values preserve energy after each row and keep the spread; low values dampen the impacts.',
+          probability: 'Adjust the probability of moving to the right (p). The complement (1-p) is the probability of going left.'
+        },
+        stats: {
+          released: 'Balls released',
+          settled: 'Balls settled',
+          stdDev: 'Standard deviation'
+        },
+        buttons: {
+          start: 'Start',
+          pause: 'Pause',
+          reset: 'Reset'
+        },
+        legend: {
+          normal: 'Normal (Gauss)',
+          binomial: 'Exact binomial'
+        }
+      }
+    };
+    let currentLanguage = 'es';
+    let themeLabels = translations.es.themeOptions;
+
+    function applyTranslations(lang = currentLanguage) {
+      const selected = translations[lang] ? lang : 'es';
+      currentLanguage = selected;
+      const t = translations[selected];
+      document.title = t.pageTitle;
+
+      textElements.title.textContent = t.title;
+      textElements.subtitle.textContent = t.subtitle;
+      textElements.configTitle.textContent = t.configTitle;
+      textElements.boardTitle.textContent = t.boardTitle;
+      textElements.histogramTitle.textContent = t.histogramTitle;
+      const langLabel = t.languageLabel || translations.es.languageLabel;
+      languageSelect.setAttribute('aria-label', langLabel);
+      const themeTexts = t.themeOptions || translations.es.themeOptions;
+      themeToggleGroup.setAttribute('aria-label', t.themeLabel || translations.es.themeLabel);
+      setThemeButtonLabels(themeTexts);
+      setActiveThemeButton(themeState.mode);
+      const helpLabel = t.helpButton || translations.es.helpButton;
+      helpButtonText.textContent = helpLabel;
+      helpButton.setAttribute('aria-label', helpLabel);
+      helpButton.setAttribute('title', helpLabel);
+      helpTitle.textContent = t.helpTitle || translations.es.helpTitle;
+      helpBody.innerHTML = t.helpContent || translations.es.helpContent;
+      const closeLabel = t.helpClose || translations.es.helpClose;
+      helpClose.textContent = closeLabel;
+      helpClose.setAttribute('aria-label', closeLabel);
+
+      labelElements.rows.textContent = t.labels.rows;
+      labelElements.balls.textContent = t.labels.balls;
+      labelElements.interval.textContent = t.labels.interval;
+      labelElements.radius.textContent = t.labels.radius;
+      labelElements.gravity.textContent = t.labels.gravity;
+      labelElements.bounce.textContent = t.labels.bounce;
+      labelElements.probability.textContent = t.labels.probability;
+
+      labelWrappers.rows.setAttribute('data-tooltip', t.tooltips.rows);
+      labelWrappers.balls.setAttribute('data-tooltip', t.tooltips.balls);
+      labelWrappers.interval.setAttribute('data-tooltip', t.tooltips.interval);
+      labelWrappers.radius.setAttribute('data-tooltip', t.tooltips.radius);
+      labelWrappers.gravity.setAttribute('data-tooltip', t.tooltips.gravity);
+      labelWrappers.bounce.setAttribute('data-tooltip', t.tooltips.bounce);
+      labelWrappers.probability.setAttribute('data-tooltip', t.tooltips.probability);
+
+      stats.labels.released.textContent = t.stats.released;
+      stats.labels.settled.textContent = t.stats.settled;
+      stats.labels.stdDev.textContent = t.stats.stdDev;
+
+      buttons.start.textContent = t.buttons.start;
+      buttons.pause.textContent = t.buttons.pause;
+      buttons.reset.textContent = t.buttons.reset;
+
+      languageSelect.value = selected;
+    }
+
+    const themeState = { mode: 'auto' };
 
     const state = {
       running: false,
@@ -266,35 +1038,155 @@
       lastTime: 0,
       geometry: null,
       rowHeights: [],
-      binFlash: []
+      binFlash: [],
+      theme: {
+        boardBg: '#0c131b',
+        boardBin: 'rgba(255, 255, 255, 0.08)',
+        boardLine: 'rgba(255, 255, 255, 0.1)',
+        histBg: '#0b0f18',
+        legendBg: 'rgba(8, 10, 15, 0.75)',
+        legendBorder: 'rgba(255, 255, 255, 0.08)',
+        legendText: '#f4f7ff',
+        textColor: '#f5f7fb'
+      }
     };
 
     const config = {
-      rows: parseInt(document.getElementById('rows').value, 10),
-      totalBalls: parseInt(document.getElementById('balls').value, 10),
-      interval: parseInt(document.getElementById('interval').value, 10),
-      ballRadius: parseInt(document.getElementById('ball-radius').value, 10),
-      gravity: parseFloat(gravityRange.value),
+      rows: parseInt(rowsInput.value, 10),
+      totalBalls: parseInt(ballsInput.value, 10),
+      interval: parseInt(intervalInput.value, 10),
+      ballRadius: parseInt(radiusInput.value, 10),
+      gravityG: parseFloat(gravityRange.value),
+      gravity: parseFloat(gravityRange.value) * PX_PER_G,
       restitution: parseFloat(bounceRange.value),
-      lateralNoise: parseFloat(noiseRange.value)
+      probRight: parseFloat(probabilityRange.value)
+    };
+    const getDefaultValue = (input) => input.dataset.default ?? input.value;
+    const defaultFormValues = {
+      rows: getDefaultValue(rowsInput),
+      balls: getDefaultValue(ballsInput),
+      interval: getDefaultValue(intervalInput),
+      ballRadius: getDefaultValue(radiusInput),
+      gravity: getDefaultValue(gravityRange),
+      bounce: getDefaultValue(bounceRange),
+      probability: getDefaultValue(probabilityRange)
     };
 
+    function readThemeColors() {
+      const styles = getComputedStyle(document.documentElement);
+      const getVar = (name, fallback) => {
+        const value = styles.getPropertyValue(name).trim();
+        return value || fallback;
+      };
+      state.theme = {
+        boardBg: getVar('--board-bg', '#0c131b'),
+        boardBin: getVar('--board-bin', 'rgba(255, 255, 255, 0.08)'),
+        boardLine: getVar('--board-line', 'rgba(255, 255, 255, 0.1)'),
+        histBg: getVar('--hist-bg', '#0b0f18'),
+        legendBg: getVar('--legend-bg', 'rgba(8, 10, 15, 0.75)'),
+        legendBorder: getVar('--legend-border', 'rgba(255, 255, 255, 0.08)'),
+        legendText: getVar('--legend-text', '#f4f7ff'),
+        textColor: getVar('--text-color', '#f5f7fb')
+      };
+    }
+
+    function setupColorSchemeListener() {
+      const media = window.matchMedia('(prefers-color-scheme: light)');
+      const listener = () => {
+        if (themeState.mode !== 'auto') return;
+        document.documentElement.removeAttribute('data-theme');
+        readThemeColors();
+        drawBoard();
+        drawHistogram();
+      };
+      if (typeof media.addEventListener === 'function') {
+        media.addEventListener('change', listener);
+      } else if (typeof media.addListener === 'function') {
+        media.addListener(listener);
+      }
+    }
+
+    function setThemeButtonLabels(labels) {
+      themeLabels = labels || translations.es.themeOptions;
+      updateThemeButtonLabel(themeState.mode);
+    }
+
+    function updateThemeButtonLabel(mode) {
+      const text = themeLabels[mode] || translations.es.themeOptions[mode];
+      themeButton.setAttribute('aria-label', text);
+      themeButton.setAttribute('title', text);
+    }
+
+    function setActiveThemeButton(mode) {
+      themeButton.dataset.mode = mode;
+      themeButton.classList.add('active');
+      themeButton.setAttribute('aria-pressed', 'true');
+      updateThemeButtonLabel(mode);
+    }
+
+    function openHelp() {
+      helpModal.classList.add('open');
+      helpModal.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeHelp() {
+      helpModal.classList.remove('open');
+      helpModal.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+    }
+
+    function cycleThemeMode() {
+      const currentIndex = THEME_MODES.indexOf(themeState.mode);
+      const nextMode = THEME_MODES[(currentIndex + 1) % THEME_MODES.length];
+      applyTheme(nextMode);
+    }
+
+    function applyTheme(mode, options = {}) {
+      const selected = mode === 'light' || mode === 'dark' ? mode : 'auto';
+      themeState.mode = selected;
+      setActiveThemeButton(selected);
+      if (selected === 'light' || selected === 'dark') {
+        document.documentElement.setAttribute('data-theme', selected);
+      } else {
+        document.documentElement.removeAttribute('data-theme');
+      }
+      readThemeColors();
+      if (!options.skipDraw) {
+        drawBoard();
+        drawHistogram();
+      }
+    }
+
     function updateRangeLabels() {
-      gravityValue.textContent = config.gravity.toFixed(0);
+      const gravityLabelValue = `${config.gravityG.toFixed(2)} g (${(config.gravityG * EARTH_GRAVITY).toFixed(2)} m/s²)`;
+      gravityValue.textContent = gravityLabelValue;
       bounceValue.textContent = config.restitution.toFixed(2);
-      noiseValue.textContent = config.lateralNoise.toFixed(2);
+      probabilityValue.textContent = config.probRight.toFixed(2);
+      probabilityComplement.textContent = (1 - config.probRight).toFixed(2);
     }
 
     function applyFormValues() {
-      config.rows = clamp(parseInt(document.getElementById('rows').value, 10), 4, 16);
-      config.totalBalls = clamp(parseInt(document.getElementById('balls').value, 10), 20, 1000);
-      config.interval = clamp(parseInt(document.getElementById('interval').value, 10), 50, 1000);
-      config.ballRadius = clamp(parseInt(document.getElementById('ball-radius').value, 10), 4, 10);
-      config.gravity = clamp(parseFloat(gravityRange.value), 200, 900);
+      config.rows = clamp(parseInt(rowsInput.value, 10), 4, 16);
+      config.totalBalls = clamp(parseInt(ballsInput.value, 10), 20, 1000);
+      config.interval = clamp(parseInt(intervalInput.value, 10), 50, 1000);
+      config.ballRadius = clamp(parseInt(radiusInput.value, 10), 4, 10);
+      config.gravityG = clamp(parseFloat(gravityRange.value), GRAVITY_MIN, GRAVITY_MAX);
+      config.gravity = config.gravityG * PX_PER_G;
       config.restitution = clamp(parseFloat(bounceRange.value), 0.1, 0.9);
-      config.lateralNoise = clamp(parseFloat(noiseRange.value), 0, 0.8);
+      config.probRight = clamp(parseFloat(probabilityRange.value), 0, 1);
       updateRangeLabels();
       rebuildBoard();
+    }
+
+    function handleConfigUpdate() {
+      applyFormValues();
+      if (state.running) {
+        startRelease();
+      } else {
+        drawBoard();
+        drawHistogram();
+      }
     }
 
     function clamp(value, min, max) {
@@ -384,6 +1276,19 @@
       return Math.exp(-0.5 * z * z) / (sigma * Math.sqrt(2 * Math.PI));
     }
 
+    function binomialProbability(n, k, p) {
+      if (k < 0 || k > n) return 0;
+      const r = Math.min(k, n - k);
+      let coeff = 1;
+      for (let i = 0; i < r; i++) {
+        coeff *= (n - i);
+        coeff /= (i + 1);
+      }
+      const right = Math.pow(p, k);
+      const left = Math.pow(1 - p, n - k);
+      return coeff * right * left;
+    }
+
     function update(timestamp) {
       if (!state.running) {
         requestAnimationFrame(update);
@@ -423,8 +1328,7 @@
     }
 
     function deflectBall(ball) {
-      const probability = clamp(0.5 + (Math.random() - 0.5) * config.lateralNoise, 0.05, 0.95);
-      const goRight = Math.random() < probability;
+      const goRight = Math.random() < config.probRight;
       if (goRight) {
         ball.rights += 1;
       }
@@ -461,16 +1365,22 @@
 
     function drawBoard() {
       boardCtx.clearRect(0, 0, boardCanvas.width, boardCanvas.height);
-      boardCtx.fillStyle = '#0c131b';
+      boardCtx.fillStyle = state.theme.boardBg;
       boardCtx.fillRect(0, 0, boardCanvas.width, boardCanvas.height);
 
       const binHeight = 80;
       const binWidth = boardCanvas.width / state.bins.length;
       boardCtx.shadowColor = 'transparent';
       boardCtx.shadowBlur = 0;
+      const labelY = boardCanvas.height - binHeight + binHeight / 2 + 5;
+      boardCtx.font = '14px "Segoe UI", sans-serif';
+      boardCtx.textAlign = 'center';
+      boardCtx.textBaseline = 'middle';
+      const labelColor = state.theme.textColor || '#f5f7fb';
+
       for (let i = 0; i < state.bins.length; i++) {
         const x = binWidth * i;
-        boardCtx.fillStyle = 'rgba(255, 255, 255, 0.08)';
+        boardCtx.fillStyle = state.theme.boardBin;
         boardCtx.fillRect(x, boardCanvas.height - binHeight, binWidth - 2, binHeight);
         const flash = state.binFlash[i] || 0;
         if (flash > 0) {
@@ -485,9 +1395,13 @@
           );
           boardCtx.shadowBlur = 0;
         }
+        if (state.bins[i] > 0) {
+          boardCtx.fillStyle = labelColor;
+          boardCtx.fillText(state.bins[i], x + binWidth / 2 - 1, labelY);
+        }
       }
 
-      boardCtx.strokeStyle = 'rgba(255,255,255,0.1)';
+      boardCtx.strokeStyle = state.theme.boardLine;
       boardCtx.beginPath();
       boardCtx.moveTo(0, boardCanvas.height - binHeight);
       boardCtx.lineTo(boardCanvas.width, boardCanvas.height - binHeight);
@@ -508,18 +1422,75 @@
       }
     }
 
+    function drawHistogramLegend(normalColor, binomialColor) {
+      const legendTexts = translations[currentLanguage]?.legend || translations.es.legend;
+      const padding = 10;
+      const lineLength = 26;
+      const legendWidth = 170;
+      const legendHeight = 52;
+      const x = histogramCanvas.width - legendWidth - padding;
+      const y = padding;
+      histCtx.fillStyle = state.theme.legendBg || 'rgba(8, 10, 15, 0.75)';
+      histCtx.strokeStyle = state.theme.legendBorder || 'rgba(255, 255, 255, 0.08)';
+      histCtx.lineWidth = 1;
+      histCtx.beginPath();
+      if (histCtx.roundRect) {
+        histCtx.roundRect(x, y, legendWidth, legendHeight, 10);
+      } else {
+        histCtx.rect(x, y, legendWidth, legendHeight);
+      }
+      histCtx.fill();
+      histCtx.stroke();
+
+      histCtx.font = '12px "Segoe UI", sans-serif';
+      histCtx.textAlign = 'left';
+      histCtx.textBaseline = 'middle';
+
+      const normalY = y + 16;
+      histCtx.strokeStyle = normalColor;
+      histCtx.lineWidth = 2;
+      histCtx.setLineDash([]);
+      histCtx.beginPath();
+      histCtx.moveTo(x + 12, normalY);
+      histCtx.lineTo(x + 12 + lineLength, normalY);
+      histCtx.stroke();
+      histCtx.fillStyle = state.theme.legendText || '#f4f7ff';
+      histCtx.fillText(legendTexts.normal, x + 12 + lineLength + 8, normalY);
+
+      const binomialY = y + 36;
+      histCtx.strokeStyle = binomialColor;
+      histCtx.setLineDash([8, 5]);
+      histCtx.beginPath();
+      histCtx.moveTo(x + 12, binomialY);
+      histCtx.lineTo(x + 12 + lineLength, binomialY);
+      histCtx.stroke();
+      histCtx.setLineDash([]);
+      histCtx.fillStyle = state.theme.legendText || '#f4f7ff';
+      histCtx.fillText(legendTexts.binomial, x + 12 + lineLength + 8, binomialY);
+    }
+
     function drawHistogram() {
       histCtx.clearRect(0, 0, histogramCanvas.width, histogramCanvas.height);
       const bins = state.bins.length;
       if (!bins) return;
       const barWidth = histogramCanvas.width / bins;
       const maxCount = Math.max(...state.bins, 1);
-      const mean = config.rows * 0.5;
-      const sigma = Math.max(Math.sqrt(config.rows) / 2, 0.0001);
-      const expectedPeak = normalPdf(mean, mean, sigma) * config.totalBalls;
-      const referenceMax = Math.max(maxCount, expectedPeak, 1);
+      const p = config.probRight;
+      const mean = config.rows * p;
+      const sigma = Math.max(Math.sqrt(config.rows * p * (1 - p)), 0.0001);
+      const landedCount = state.bins.reduce((acc, value) => acc + value, 0);
+      const referenceTotal = landedCount || config.totalBalls;
+      const expectedPeak = normalPdf(mean, mean, sigma) * referenceTotal;
+      const binomialCounts = [];
+      let maxBinomial = 0;
+      for (let idx = 0; idx < bins; idx++) {
+        const expected = binomialProbability(config.rows, idx, p) * referenceTotal;
+        binomialCounts.push(expected);
+        maxBinomial = Math.max(maxBinomial, expected);
+      }
+      const referenceMax = Math.max(maxCount, expectedPeak, maxBinomial, 1);
       const drawableHeight = histogramCanvas.height - 30;
-      histCtx.fillStyle = '#0b0f18';
+      histCtx.fillStyle = state.theme.histBg;
       histCtx.fillRect(0, 0, histogramCanvas.width, histogramCanvas.height);
 
       state.bins.forEach((count, idx) => {
@@ -533,12 +1504,16 @@
         histCtx.fillRect(x + 4, y, barWidth - 8, height);
       });
 
-      histCtx.strokeStyle = '#ffd166';
+      const normalColor = '#ffd166';
+      const binomialColor = '#7cf1c5';
+
+      histCtx.strokeStyle = normalColor;
       histCtx.lineWidth = 2;
+      histCtx.setLineDash([]);
       histCtx.beginPath();
       for (let x = 0; x <= histogramCanvas.width; x++) {
         const binValue = (x / histogramCanvas.width) * (bins - 1);
-        const expected = normalPdf(binValue, mean, sigma) * config.totalBalls;
+        const expected = normalPdf(binValue, mean, sigma) * referenceTotal;
         const y = histogramCanvas.height - 10 - (expected / referenceMax) * drawableHeight;
         if (x === 0) {
           histCtx.moveTo(x, y);
@@ -548,7 +1523,24 @@
       }
       histCtx.stroke();
 
-      histCtx.fillStyle = 'rgba(255,255,255,0.75)';
+      histCtx.strokeStyle = binomialColor;
+      histCtx.setLineDash([8, 5]);
+      histCtx.beginPath();
+      binomialCounts.forEach((count, idx) => {
+        const x = idx * barWidth + barWidth / 2;
+        const y = histogramCanvas.height - 10 - (count / referenceMax) * drawableHeight;
+        if (idx === 0) {
+          histCtx.moveTo(x, y);
+        } else {
+          histCtx.lineTo(x, y);
+        }
+      });
+      histCtx.stroke();
+      histCtx.setLineDash([]);
+
+      drawHistogramLegend(normalColor, binomialColor);
+
+      histCtx.fillStyle = state.theme.textColor || 'rgba(255,255,255,0.75)';
       histCtx.font = '12px "Segoe UI", sans-serif';
       histCtx.textAlign = 'center';
       state.bins.forEach((count, idx) => {
@@ -556,20 +1548,14 @@
       });
     }
 
-    document.getElementById('apply').addEventListener('click', () => {
-      applyFormValues();
-      if (state.running) {
-        startRelease();
-      }
-    });
-
     document.getElementById('start').addEventListener('click', () => {
-      applyFormValues();
-      if (!state.running) {
-        state.running = true;
-        state.lastTime = 0;
-        startRelease();
+      const isPristine = !state.running && state.dropped === 0 && state.settled === 0 && state.balls.length === 0;
+      if (isPristine) {
+        handleConfigUpdate();
       }
+      state.running = true;
+      state.lastTime = 0;
+      startRelease();
     });
 
     document.getElementById('pause').addEventListener('click', () => {
@@ -587,13 +1573,19 @@
         clearInterval(state.releaseTimer);
         state.releaseTimer = null;
       }
-      rebuildBoard();
-      drawBoard();
-      drawHistogram();
+      rowsInput.value = defaultFormValues.rows;
+      ballsInput.value = defaultFormValues.balls;
+      intervalInput.value = defaultFormValues.interval;
+      radiusInput.value = defaultFormValues.ballRadius;
+      gravityRange.value = defaultFormValues.gravity;
+      bounceRange.value = defaultFormValues.bounce;
+      probabilityRange.value = defaultFormValues.probability;
+      handleConfigUpdate();
     });
 
     gravityRange.addEventListener('input', (event) => {
-      config.gravity = parseFloat(event.target.value);
+      config.gravityG = parseFloat(event.target.value);
+      config.gravity = config.gravityG * PX_PER_G;
       updateRangeLabels();
     });
 
@@ -602,11 +1594,42 @@
       updateRangeLabels();
     });
 
-    noiseRange.addEventListener('input', (event) => {
-      config.lateralNoise = parseFloat(event.target.value);
+    probabilityRange.addEventListener('input', (event) => {
+      config.probRight = parseFloat(event.target.value);
       updateRangeLabels();
     });
 
+    [rowsInput, ballsInput, intervalInput, radiusInput].forEach((input) => {
+      input.addEventListener('change', handleConfigUpdate);
+    });
+    gravityRange.addEventListener('change', handleConfigUpdate);
+    bounceRange.addEventListener('change', handleConfigUpdate);
+    probabilityRange.addEventListener('change', handleConfigUpdate);
+
+    languageSelect.addEventListener('change', (event) => {
+      applyTranslations(event.target.value);
+      drawBoard();
+      drawHistogram();
+    });
+
+    themeButton.addEventListener('click', cycleThemeMode);
+
+    helpButton.addEventListener('click', openHelp);
+    helpClose.addEventListener('click', closeHelp);
+    helpModal.addEventListener('click', (event) => {
+      if (event.target === helpModal) {
+        closeHelp();
+      }
+    });
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && helpModal.classList.contains('open')) {
+        closeHelp();
+      }
+    });
+
+    applyTheme('auto', { skipDraw: true });
+    setupColorSchemeListener();
+    applyTranslations('es');
     rebuildBoard();
     drawBoard();
     drawHistogram();
